@@ -1,6 +1,7 @@
 module Main where
 
-import Lib
+import Lib (reduce)
+import Lexer (parseExpr)
 
 main :: IO ()
 main = do
