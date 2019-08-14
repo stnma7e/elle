@@ -61,11 +61,9 @@ ifthen = do
     return (If cond tr fl)
 
 -- Constants
-true, false :: Parser Expr
+true, false, constNum :: Parser Expr
 true  = reserved "true"  >> (return $ Lit (LBool True))
 false = reserved "false" >> (return $ Lit (LBool False))
-
-constNum :: Parser Expr
 constNum = do
     n <- number
     return . Lit $ case n of
@@ -83,24 +81,19 @@ lam = do
     ex <- expr
     return (Lam name ex)
 
-app :: Parser Expr
-app = do
-    fun <- (parens lam <|> lam)
-    target <- expr
-    return (App fun target)
-
 expr :: Parser Expr
-expr = Ex.buildExpressionParser [] factor
+expr = do
+    es <- many1 term
+    return (foldl1 App es)
 
-factor :: Parser Expr
-factor = parens expr
+term :: Parser Expr
+term = parens expr
+    <|> ifthen
     <|> true
     <|> false
     <|> constNum
-    <|> app
-    <|> lam
     <|> var
-    <|> ifthen
+    <|> lam
 
 contents :: Parser a -> Parser a
 contents p = do
