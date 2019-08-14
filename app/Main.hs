@@ -2,7 +2,7 @@ module Main where
 
 import Control.Monad.State.Lazy
 
-import Lib (reduce, defaultStack)
+import Eval (reduce, defaultStack)
 import Parser (parseExpr)
 
 main :: IO ()

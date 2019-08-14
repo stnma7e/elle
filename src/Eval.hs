@@ -1,23 +1,22 @@
-module Lib
-( module Syntax
-, module Parser
-, reduce
+module Eval
+( EvalState
+, StackState
 , defaultStack
+, reduce
 ) where
 
 import Data.List
 import Control.Monad.State.Lazy
 import Debug.Trace
 
-import Syntax
-import Parser
+import Syntax (Expr(..), Name)
+
+type EvalState = State StackState
 
 data StackState = StackState
     { stack :: [Name]
     , free :: [Name]
     } deriving (Show)
-
-type EvalState = State StackState
 
 defaultStack :: StackState
 defaultStack = StackState
@@ -30,9 +29,7 @@ reduce app@(App lam@(Lam name fun) expr) = do
     reducedExpr <- reduce expr
     reducedLam <- reduce lam
     lamFreeVar <- findFree reducedLam []
-    trace ("lamFreeVar: " ++ show lamFreeVar) $ return ()
     exprFreeVar <- findFree expr []
-    trace ("exprFreeVar: " ++ show exprFreeVar) $ return ()
     case reducedExpr of
         (Var other) -> if elem other lamFreeVar
             then return app
