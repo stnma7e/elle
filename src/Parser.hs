@@ -1,4 +1,4 @@
-module Lexer
+module Parser
 ( parseExpr
 ) where
 
@@ -48,7 +48,6 @@ number = Tok.naturalOrFloat lexer
 
 prefixOp :: String -> (a -> a) -> Ex.Operator String () Identity a
 prefixOp s f = Ex.Prefix (reservedOp s >> return f)
-
 
 -- if/then/else
 ifthen :: Parser Expr

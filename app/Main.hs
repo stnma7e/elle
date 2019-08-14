@@ -1,14 +1,17 @@
 module Main where
 
-import Lib (reduce)
-import Lexer (parseExpr)
+import Data.Either
+import Control.Monad.State.Lazy
+
+import Lib (reduce, defaultStack)
+import Parser (parseExpr)
 
 main :: IO ()
 main = do
-    let expr = parseExpr "\
+    let (Right expr) = parseExpr "\
 \if if 1000.50 then true else false then 0 else \\x . (if x then y else z) y \
     \"
     print expr
     putStrLn ""
-    print $ fmap reduce expr
+    print $ runState (reduce expr) defaultStack
     return ()
