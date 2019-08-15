@@ -68,10 +68,14 @@ var = identifier >>= (return . Var)
 lam :: Parser Expr
 lam = do
     reservedOp "\\"
-    (Var name) <- var
+    names <- many1 var
     reservedOp "."
     ex <- expr
-    return (Lam name ex)
+    let (Var firstName) = last names
+    return $ foldr
+        (\(Var name) acc -> Lam name acc)
+        (Lam firstName ex)
+        (init names)
 
 expr :: Parser Expr
 expr = do

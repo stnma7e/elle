@@ -9,7 +9,7 @@ main :: IO ()
 main = do
     let src =
             -- SKK identity
-            "(\\x. (\\y. (\\z. x z (y z)))) (\\x. (\\y. x)) (\\x. (\\y . x))"
+            "(\\x y z. x z (y z)) (\\x y. x) (\\x y . x)"
     print $ parseExpr src
     let (Right expr) = parseExpr src
     putStrLn ""
