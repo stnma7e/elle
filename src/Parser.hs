@@ -18,7 +18,7 @@ langDef = Tok.LanguageDef
     , Tok.identLetter     = alphaNum <|> oneOf "_'"
     , Tok.opStart         = oneOf ":!#$%&*+./<=>?@\\^|-~"
     , Tok.opLetter        = oneOf ":!#$%&*+./<=>?@\\^|-~"
-    , Tok.reservedNames   = ["true", "false", "if", "then", "else"]
+    , Tok.reservedNames   = ["true", "false", "if", "then", "else", "let", "in"]
     , Tok.reservedOpNames = ["\\", "."]
     , Tok.caseSensitive   = True
     }
@@ -63,7 +63,7 @@ constNum = do
         Right n -> LFloat n
 
 var :: Parser Expr
-var = identifier >>= (return . Var)
+var = identifier >>= (return . Var . Name)
 
 lam :: Parser Expr
 lam = do
@@ -77,6 +77,16 @@ lam = do
         (Lam firstName ex)
         (init names)
 
+letin :: Parser Expr
+letin = do
+    reserved "let"
+    (Var name) <- var
+    reservedOp "="
+    binding <- expr
+    reserved "in"
+    ex <- expr
+    return $ App (Lam name ex) binding
+
 expr :: Parser Expr
 expr = do
     es <- many1 term
@@ -89,6 +99,7 @@ term = parens expr
     <|> false
     <|> constNum
     <|> var
+    <|> letin
     <|> lam
 
 contents :: Parser a -> Parser a

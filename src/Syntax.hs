@@ -1,6 +1,9 @@
 module Syntax where
 
-type Name = String
+newtype Name = Name String
+    deriving (Eq)
+instance Show Name where
+    show (Name n) = "\"" ++ n ++ "\""
 
 data Expr
     = Var Name
