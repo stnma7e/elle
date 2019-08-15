@@ -8,9 +8,10 @@ import Parser (parseExpr)
 main :: IO ()
 main = do
     let src =
-            "if if 1000.50 then true else false then 0 else (\\x . (if x then y else z)) (\\c.b)"
-            -- "(\\x . x z (y z)) (\\q. b x)"
+            -- SKK identity
+            "(\\x. (\\y. (\\z. x z (y z)))) (\\x. (\\y. x)) (\\x. (\\y . x))"
     print $ parseExpr src
     let (Right expr) = parseExpr src
     putStrLn ""
-    print $ runState (reduce expr) defaultStack
+    let state = runState (reduce expr) defaultStack
+    print state
