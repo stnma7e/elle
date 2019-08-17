@@ -3,7 +3,7 @@ module Syntax where
 newtype Name = Name String
     deriving (Eq)
 instance Show Name where
-    show (Name n) = "\"" ++ n ++ "\""
+    show (Name n) = "(Name \"" ++ n ++ "\")"
 
 data Expr
     = Var Name

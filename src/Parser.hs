@@ -19,7 +19,7 @@ langDef = Tok.LanguageDef
     , Tok.opStart         = oneOf ":!#$%&*+./<=>?@\\^|-~"
     , Tok.opLetter        = oneOf ":!#$%&*+./<=>?@\\^|-~"
     , Tok.reservedNames   = ["true", "false", "if", "then", "else", "let", "in"]
-    , Tok.reservedOpNames = ["\\", "."]
+    , Tok.reservedOpNames = ["\\", ".", ":"]
     , Tok.caseSensitive   = True
     }
 
@@ -54,8 +54,8 @@ ifthen = do
 
 -- Constants
 true, false, constNum :: Parser Expr
-true  = reserved "true"  >> (return $ Lit (LBool True))
-false = reserved "false" >> (return $ Lit (LBool False))
+true  = reserved "true"  >> return (Lit (LBool True))
+false = reserved "false" >> return (Lit (LBool False))
 constNum = do
     n <- number
     return . Lit $ case n of
@@ -63,7 +63,7 @@ constNum = do
         Right n -> LFloat n
 
 var :: Parser Expr
-var = identifier >>= (return . Var . Name)
+var = (Var . Name) <$> identifier
 
 lam :: Parser Expr
 lam = do
@@ -88,9 +88,7 @@ letin = do
     return $ App (Lam name ex) binding
 
 expr :: Parser Expr
-expr = do
-    es <- many1 term
-    return (foldl1 App es)
+expr = foldl1 App <$> many1 term
 
 term :: Parser Expr
 term = parens expr
@@ -110,4 +108,4 @@ contents p = do
     return r
 
 parseExpr :: String -> Either ParseError Expr
-parseExpr s = parse (contents expr) "<test>" s
+parseExpr = parse (contents expr) "<test>"
